@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "A Professional Chat App",
-  description: "Hey it's me Shariful Islam. I'm using all the technology I know to create this App. Wish me luck",
+  description:
+    "Hey it's me Shariful Islam. I'm using all the technology I know to create this App. Wish me luck",
 };
 
 export default function RootLayout({
@@ -25,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#000000]`}
       >
-        {children}
+        <MaxWidthWrapper>{children}</MaxWidthWrapper>
       </body>
     </html>
   );

@@ -1,0 +1,169 @@
+"use client";
+
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import Image from "next/image";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { registerAction } from "@/app/action/authAction";
+import { registerFormSchema } from "@/app/model/authSchemas";
+
+type FormValues = z.infer<typeof registerFormSchema>;
+
+export default function RegisterForm() {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      avatar: undefined,
+    },
+  });
+
+  const avatarFile = form.watch("avatar");
+
+  if (avatarFile && avatarFile[0] && !preview) {
+    const file = avatarFile[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  const onSubmit = async (data: FormValues) => {
+    const res = await registerAction(data);
+    console.log(res);
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen px-4 ">
+      <Card className="w-full max-w-md border-none bg-[#0B192C] text-white">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Register</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Avatar Upload */}
+              <FormField
+                control={form.control}
+                name="avatar"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col items-center gap-3">
+                    {preview ? (
+                      <Image
+                        src={preview}
+                        alt="Avatar"
+                        width={80}
+                        height={80}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-[80px] h-[80px] rounded-full bg-muted flex items-center justify-center text-sm text-muted-foreground">
+                        No Image
+                      </div>
+                    )}
+
+                    <FormControl>
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => field.onChange(e.target.files)}
+                          id="avatar"
+                          name="avatar"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <label
+                          htmlFor="avatar"
+                          className="inline-flex items-center justify-center bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium cursor-pointer hover:bg-primary/90 transition"
+                        >
+                          Upload Avatar
+                        </label>
+                      </div>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
