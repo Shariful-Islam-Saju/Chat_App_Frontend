@@ -53,7 +53,7 @@ export default function RegisterForm() {
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4 ">
-      <Card className="w-full max-w-md border-none bg-[#0B192C] text-white">
+      <Card className="w-full max-w-md border-none bg-[#DBE2EF] text-black">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Register</CardTitle>
         </CardHeader>
@@ -72,7 +72,7 @@ export default function RegisterForm() {
                         alt="Avatar"
                         width={80}
                         height={80}
-                        className="rounded-full object-cover"
+                        className="rounded-full w-[80px] h-[80px] object-cover"
                       />
                     ) : (
                       <div className="w-[80px] h-[80px] rounded-full bg-muted flex items-center justify-center text-sm text-muted-foreground">
@@ -88,7 +88,7 @@ export default function RegisterForm() {
                           onChange={(e) => field.onChange(e.target.files)}
                           id="avatar"
                           name="avatar"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          className="absolute   inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
                         <label
                           htmlFor="avatar"
@@ -112,7 +112,11 @@ export default function RegisterForm() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
+                      <Input
+                        placeholder="Your name"
+                        className="border-gray-400"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -130,6 +134,7 @@ export default function RegisterForm() {
                       <Input
                         type="email"
                         placeholder="you@example.com"
+                        className="border-gray-400"
                         {...field}
                       />
                     </FormControl>
@@ -149,6 +154,7 @@ export default function RegisterForm() {
                       <Input
                         type="password"
                         placeholder="••••••••"
+                        className="border-gray-400"
                         {...field}
                       />
                     </FormControl>
