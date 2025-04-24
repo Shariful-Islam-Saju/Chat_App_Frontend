@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 
 import {
@@ -24,7 +24,7 @@ type FormValues = z.infer<typeof registerFormSchema>;
 
 export default function RegisterForm() {
   const [preview, setPreview] = useState<string | null>(null);
-
+  const [isPending, startTransition] = useTransition()
   const form = useForm<FormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -47,8 +47,11 @@ export default function RegisterForm() {
   }
 
   const onSubmit = async (data: FormValues) => {
-    const res = await registerAction(data);
+    startTransition(async () => {
+          const res = await registerAction(data);
     console.log(res);
+    })
+
   };
 
   return (
@@ -163,7 +166,7 @@ export default function RegisterForm() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
+              <Button disabled={isPending} type="submit" className="w-full">
                 Register
               </Button>
             </form>

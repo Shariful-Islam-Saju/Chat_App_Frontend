@@ -33,6 +33,7 @@ export const registerAction = async (
       throw new Error(`Failed to register: ${err}`);
     }
     const data = await res.json();
+    
     return data;
   } catch (error) {
     // Handle errors
@@ -50,15 +51,17 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
     const validateFields = loginFormSchema.safeParse(user);
     if (validateFields.error) throw new Error("Invalid Fields");
 
-    // Prepare form data for the request
-    const formData = new FormData();
-    formData.append("email", validateFields.data.email);
-    formData.append("password", validateFields.data.password);
-
     // Send request to the server
     const res = await fetch(`${process.env.SERVER_URL}/api/auth/login`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json", // Make sure the C is capitalized (standard naming)
+      },
+      body: JSON.stringify({
+        email: validateFields.data.email,
+        password: validateFields.data.password,
+      }),
+      credentials: "include",
     });
 
     // Handle server response
@@ -67,6 +70,8 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
       throw new Error(`Failed to log in: ${err}`);
     }
     const data = await res.json();
+    const jwt = res.headers.get('set-cookie')
+    console.log(jwt)
     return data;
   } catch (error) {
     // Handle errors

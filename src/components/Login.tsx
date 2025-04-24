@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import {
   Form,
@@ -30,9 +30,13 @@ export default function LoginForm() {
     },
   });
 
+  const [isPending, startTransition] = useTransition();
+
   const onSubmit = async (data: FormValues) => {
-    const res = await loginAction(data);
-    console.log(res);
+    startTransition( async() => {
+      const res = await loginAction(data);
+      console.log(res)
+    });
   };
 
   return (
@@ -84,7 +88,7 @@ export default function LoginForm() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
+              <Button disabled={isPending} type="submit" className="w-full">
                 Login
               </Button>
             </form>

@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="text-white">
+    <div className="text-black">
       Lorem ipsum dolor sit, amet consectetur adipisicing elit. Possimus aliquid
       doloribus voluptas officiis, nostrum in eius sunt rem dolor natus
       dignissimos! Accusamus sapiente maxime accusantium illum laboriosam
