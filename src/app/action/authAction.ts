@@ -33,7 +33,7 @@ export const registerAction = async (
       throw new Error(`Failed to register: ${err}`);
     }
     const data = await res.json();
-    
+
     return data;
   } catch (error) {
     // Handle errors
@@ -55,7 +55,7 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
     const res = await fetch(`${process.env.SERVER_URL}/api/auth/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", // Make sure the C is capitalized (standard naming)
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         email: validateFields.data.email,
@@ -63,15 +63,13 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
       }),
       credentials: "include",
     });
-
     // Handle server response
     if (!res.ok) {
       const err = await res.text();
       throw new Error(`Failed to log in: ${err}`);
     }
     const data = await res.json();
-    const jwt = res.headers.get('set-cookie')
-    console.log(jwt)
+    const jwt = res.headers.get("set-cookie");
     return data;
   } catch (error) {
     // Handle errors
