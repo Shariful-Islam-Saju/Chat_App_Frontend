@@ -8,7 +8,9 @@ export const registerAction = async (
   try {
     // Validate user input fields
     const validateFields = registerFormSchema.safeParse(user);
-    if (validateFields.error) throw new Error("Invalid Fields");
+    if (!validateFields.success) {
+      return { success: false, message: "Invalid Fields" };
+    }
 
     // Prepare FormData for the request
     const formData = new FormData();
@@ -30,18 +32,22 @@ export const registerAction = async (
     // Handle server response
     if (!res.ok) {
       const err = await res.text();
-      throw new Error(`Failed to register: ${err}`);
+      return { success: false, message: `Failed to register: ${err}` };
     }
-    const data = await res.json();
 
-    return data;
+    const data = await res.json();
+    return { success: true, data };
   } catch (error) {
-    // Handle errors
     if (error instanceof Error) {
-      throw new Error(`registerAction error: ${error.message}`);
-    } else {
-      throw new Error("Unknown error occurred in registerAction.");
+      return {
+        success: false,
+        message: `registerAction error: ${error.message}`,
+      };
     }
+    return {
+      success: false,
+      message: "Unknown error occurred in registerAction.",
+    };
   }
 };
 
@@ -49,7 +55,9 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
   try {
     // Validate user input fields
     const validateFields = loginFormSchema.safeParse(user);
-    if (validateFields.error) throw new Error("Invalid Fields");
+    if (!validateFields.success) {
+      return { success: false, message: "Invalid Fields" };
+    }
 
     // Send request to the server
     const res = await fetch(`${process.env.SERVER_URL}/api/auth/login`, {
@@ -63,20 +71,22 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
       }),
       credentials: "include",
     });
+
     // Handle server response
     if (!res.ok) {
       const err = await res.text();
-      throw new Error(`Failed to log in: ${err}`);
+      return { success: false, message: `Failed to log in: ${err}` };
     }
+
     const data = await res.json();
-    const jwt = res.headers.get("set-cookie");
-    return data;
+    return { success: true, data };
   } catch (error) {
-    // Handle errors
     if (error instanceof Error) {
-      throw new Error(`loginAction error: ${error.message}`);
-    } else {
-      throw new Error("Unknown error occurred in loginAction.");
+      return { success: false, message: `loginAction error: ${error.message}` };
     }
+    return {
+      success: false,
+      message: "Unknown error occurred in loginAction.",
+    };
   }
 };
