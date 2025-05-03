@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  useTransition } from "react";
+import { useTransition } from "react";
 
 import {
   Form,
@@ -33,9 +33,25 @@ export default function LoginForm() {
   const [isPending, startTransition] = useTransition();
 
   const onSubmit = async (data: FormValues) => {
-    startTransition( async() => {
-      const res = await loginAction(data);
-      console.log(res)
+    startTransition(async () => {
+      //const res = await loginAction(data);
+      console.log(process.env.SERVER_URL);
+
+      const res = await fetch(`http://localhost:5000/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+        credentials: "include",
+      });
+
+      const result =await res.json()
+
+      console.log("This is res", result);
     });
   };
 
