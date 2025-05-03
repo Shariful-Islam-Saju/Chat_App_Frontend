@@ -67,6 +67,7 @@ export const loginAction = async (user: z.infer<typeof loginFormSchema>) => {
       headers: {
         "Content-Type": "application/json",
       },
+      mode:"cors",
       body: JSON.stringify({
         email: validateFields.data.email,
         password: validateFields.data.password,
