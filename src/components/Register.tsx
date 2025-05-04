@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
+import axios from "axios";
 
 type FormValues = z.infer<typeof registerFormSchema>;
 
@@ -75,11 +76,14 @@ export default function RegisterForm() {
         form.reset();
         setPreview(null);
         setError(null);
-      } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.message ||
-          "Registration failed. Please try again.";
-        setError(errMsg);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          // error is an AxiosError
+          const errMsg = error.response?.data || error.message;
+          setError(errMsg);
+        } else {
+          setError("Something unexpected occurs!!!");
+        }
       }
     });
   };

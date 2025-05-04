@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
+import axios from "axios";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
@@ -45,11 +46,14 @@ export default function LoginForm() {
         setError(null);
         form.reset();
         return res.data;
-      } catch (error: any) {
-        const errMsg =
-          error?.response?.data?.message ||
-          "Something went wrong. Please try again.";
-        setError(errMsg);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          // error is an AxiosError
+          const errMsg = error.response?.data || error.message;
+          setError(errMsg);
+        } else {
+          setError("Something unexpected occurs!!!");
+        }
       }
     });
   };

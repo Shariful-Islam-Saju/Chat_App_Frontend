@@ -13,11 +13,6 @@ const links = [
   { name: "Contact", href: "/contact" },
 ];
 
-const authLinks = [
-  { name: "Login", href: "/login" },
-  { name: "Register", href: "/register" }
-];
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   
