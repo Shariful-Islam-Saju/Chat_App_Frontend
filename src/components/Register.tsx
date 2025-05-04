@@ -48,45 +48,44 @@ export default function RegisterForm() {
     };
     reader.readAsDataURL(file);
   }
+const onSubmit = async (data: FormValues) => {
+  setError(null); // Clear previous error
 
-  const onSubmit = async (data: FormValues) => {
-    setError(null); // Reset error
+  startTransition(async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
 
-    startTransition(async () => {
-      try {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("email", data.email);
-        formData.append("password", data.password);
-
-        if (data.avatar && data.avatar[0]) {
-          formData.append("avatar", data.avatar[0]);
-        }
-
-        const res = await axiosInstance.post("/api/auth/register", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        });
-
-        console.log(res.data);
-
-        // Reset form and preview on success
-        form.reset();
-        setPreview(null);
-        setError(null);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          // error is an AxiosError
-          const errMsg = error.response?.data || error.message;
-          setError(errMsg);
-        } else {
-          setError("Something unexpected occurs!!!");
-        }
+      if (data.avatar && data.avatar[0]) {
+        formData.append("avatar", data.avatar[0]);
       }
-    });
-  };
+
+      await axiosInstance.post("/api/auth/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
+
+      // Reset form and preview on success
+      form.reset();
+      setPreview(null);
+      setError(null);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const errMsg =
+          err.response?.data?.message ||
+          err.response?.data ||
+          "Registration failed.";
+        setError(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
+      } else {
+        setError("Something unexpected occurred. Please try again.");
+      }
+    }
+  });
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
