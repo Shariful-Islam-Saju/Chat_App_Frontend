@@ -17,14 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { registerAction } from "@/app/action/authAction";
 import { registerFormSchema } from "@/app/model/authSchemas";
+import axiosInstance from "@/lib/axios";
 
 type FormValues = z.infer<typeof registerFormSchema>;
 
 export default function RegisterForm() {
   const [preview, setPreview] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -47,15 +49,43 @@ export default function RegisterForm() {
   }
 
   const onSubmit = async (data: FormValues) => {
-    startTransition(async () => {
-          const res = await registerAction(data);
-    console.log(res);
-    })
+    setError(null); // Reset error
 
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("password", data.password);
+
+        if (data.avatar && data.avatar[0]) {
+          formData.append("avatar", data.avatar[0]);
+        }
+
+        const res = await axiosInstance.post("/api/auth/register", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        });
+
+        console.log(res.data);
+
+        // Reset form and preview on success
+        form.reset();
+        setPreview(null);
+        setError(null);
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message ||
+          "Registration failed. Please try again.";
+        setError(errMsg);
+      }
+    });
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4 ">
+    <div className="flex justify-center items-center min-h-screen px-4">
       <Card className="w-full max-w-md border-none bg-[#DBE2EF] text-black">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Register</CardTitle>
@@ -91,7 +121,7 @@ export default function RegisterForm() {
                           onChange={(e) => field.onChange(e.target.files)}
                           id="avatar"
                           name="avatar"
-                          className="absolute   inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                         />
                         <label
                           htmlFor="avatar"
@@ -166,8 +196,15 @@ export default function RegisterForm() {
                 )}
               />
 
+              {/* Error Section */}
+              {error && (
+                <div className="bg-red-300 border border-red-400 text-red-700 px-4 py-1 rounded">
+                  {error}
+                </div>
+              )}
+
               <Button disabled={isPending} type="submit" className="w-full">
-                Register
+                {isPending ? "Registering..." : "Register"}
               </Button>
             </form>
           </Form>

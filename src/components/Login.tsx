@@ -1,9 +1,8 @@
 "use client";
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 
 import {
   Form,
@@ -16,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { loginAction } from "@/app/action/authAction"; // Assuming you have a login action similar to registerAction
-import { loginFormSchema } from "@/app/model/authSchemas"; // Define a schema for login form
+import { loginFormSchema } from "@/app/model/authSchemas";
+import axiosInstance from "@/lib/axios";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
@@ -31,27 +30,27 @@ export default function LoginForm() {
   });
 
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: FormValues) => {
-    startTransition(async () => {
-      //const res = await loginAction(data);
-      console.log(process.env.SERVER_URL);
+    setError(null); // Reset previous error
 
-      const res = await fetch(`http://localhost:5000/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    startTransition(async () => {
+      try {
+        const res = await axiosInstance.post(`/api/auth/login`, {
           email: data.email,
           password: data.password,
-        }),
-        credentials: "include",
-      });
-
-      const result =await res.json()
-
-      console.log("This is res", result);
+        });
+        // If login is successful, clear error
+        setError(null);
+        form.reset();
+        return res.data;
+      } catch (error: any) {
+        const errMsg =
+          error?.response?.data?.message ||
+          "Something went wrong. Please try again.";
+        setError(errMsg);
+      }
     });
   };
 
@@ -103,9 +102,14 @@ export default function LoginForm() {
                   </FormItem>
                 )}
               />
-
+              {/* Error Section */}
+              {error && (
+                <div className="bg-red-300 border border-red-400 text-red-700 px-4 py-1 rounded">
+                  {error}
+                </div>
+              )}
               <Button disabled={isPending} type="submit" className="w-full">
-                Login
+                {isPending ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Form>
