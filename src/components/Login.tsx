@@ -38,7 +38,8 @@ export default function LoginForm() {
 
     startTransition(async () => {
       try {
-        const res = await axiosInstance.post(`/api/auth/login`, {
+        console.log(process.env.NEXT_PUBLIC_SERVER_URL);
+        const res = await axiosInstance.post("/api/auth/login", {
           email: data.email,
           password: data.password,
         });
