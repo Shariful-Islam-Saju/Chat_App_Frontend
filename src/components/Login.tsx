@@ -33,31 +33,30 @@ export default function LoginForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (data: FormValues) => {
-    setError(null); // Reset previous error
+const onSubmit = async (data: FormValues) => {
+  setError(null); // Clear any previous error
 
-    startTransition(async () => {
-      try {
-        console.log(process.env.NEXT_PUBLIC_SERVER_URL);
-        const res = await axiosInstance.post("/api/auth/login", {
-          email: data.email,
-          password: data.password,
-        });
-        // If login is successful, clear error
-        setError(null);
-        form.reset();
-        return res.data;
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          // error is an AxiosError
-          const errMsg = error.response?.data || error.message;
-          setError(errMsg);
-        } else {
-          setError("Something unexpected occurs!!!");
-        }
+  startTransition(async () => {
+    try {
+      await axiosInstance.post("/api/auth/login", {
+        email: data.email,
+        password: data.password,
+      });
+
+      // If successful, reset the form
+      setError(null);
+      form.reset();
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const errMsg =
+          err.response?.data?.message || err.response?.data || "Login failed.";
+        setError(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
+      } else {
+        setError("Something unexpected occurred. Please try again.");
       }
-    });
-  };
+    }
+  });
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
