@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Navbar from "@/components/Navbar";
+import QueryProvider from "@/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "A Professional Chat App",
+  title: {
+    default: "Chat App",
+    template: "%s | Chat App",
+  },
   description:
     "Hey it's me Shariful Islam. I'm using all the technology I know to create this App. Wish me luck",
 };
@@ -29,8 +33,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F9F7F7]`}
-      ><Navbar />
-        <MaxWidthWrapper>{children}</MaxWidthWrapper>
+      >
+        <QueryProvider>
+          <Navbar />
+          <MaxWidthWrapper>{children}</MaxWidthWrapper>
+        </QueryProvider>
       </body>
     </html>
   );
