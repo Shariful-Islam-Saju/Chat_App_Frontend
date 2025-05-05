@@ -8,9 +8,9 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 
 const links = [
   { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Contact", href: "/contact" },
+  { name: "Login", href: "/login" },
+  { name: "Register", href: "/register" },
+  { name: "Logout", href: "/logout" },
 ];
 
 export default function Navbar() {
