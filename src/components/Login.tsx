@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
-import axios from "axios";
+import {isAxiosError} from "axios";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
@@ -47,7 +47,7 @@ const onSubmit = async (data: FormValues) => {
       setError(null);
       form.reset();
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         const errMsg =
           err.response?.data?.message || err.response?.data || "Login failed.";
         setError(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
@@ -59,7 +59,7 @@ const onSubmit = async (data: FormValues) => {
 };
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4">
+    <div className="flex justify-center items-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md border-none bg-[#DBE2EF] text-black">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Login</CardTitle>

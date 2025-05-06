@@ -19,8 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
-import axios from "axios";
-
+import {isAxiosError} from "axios";
+import {useQueries} from '@tanstack/react-query'
 type FormValues = z.infer<typeof registerFormSchema>;
 
 export default function RegisterForm() {
@@ -51,12 +51,12 @@ export default function RegisterForm() {
 const onSubmit = async (data: FormValues) => {
   setError(null); // Clear previous error
 
-  startTransition(async () => {
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("password", data.password);
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("password", data.password);
 
       if (data.avatar && data.avatar[0]) {
         formData.append("avatar", data.avatar[0]);
@@ -74,7 +74,7 @@ const onSubmit = async (data: FormValues) => {
       setPreview(null);
       setError(null);
     } catch (err) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
         const errMsg =
           err.response?.data?.message ||
           err.response?.data ||
@@ -88,7 +88,7 @@ const onSubmit = async (data: FormValues) => {
 };
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4">
+    <div className="flex justify-center items-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md border-none bg-[#DBE2EF] text-black">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Register</CardTitle>
