@@ -57,7 +57,11 @@ export default function RegisterForm() {
         formData.append("avatar", data.avatar[0]);
       }
 
-      const res = await axiosInstance.post("/api/auth/register", formData);
+      const res = await axiosInstance.post("/api/auth/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return res.data;
     },
     onSuccess: () => {
