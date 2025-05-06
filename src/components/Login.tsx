@@ -31,7 +31,7 @@ export default function LoginForm() {
     },
   });
 
-  const { mutate, isPending, isError, error, isSuccess , data} = useMutation({
+  const { mutate, isPending, isError, error, isSuccess ,} = useMutation({
     mutationFn: async (data: FormValues) => {
       const res = await axiosInstance.post("/api/auth/login", data);
       return res.data;
