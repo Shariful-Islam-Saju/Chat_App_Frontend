@@ -1,8 +1,9 @@
 "use client";
+
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Form,
@@ -17,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
-import {isAxiosError} from "axios";
+import { isAxiosError } from "axios";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
@@ -30,34 +31,20 @@ export default function LoginForm() {
     },
   });
 
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
-const onSubmit = async (data: FormValues) => {
-  setError(null); // Clear any previous error
-
-  startTransition(async () => {
-    try {
-      await axiosInstance.post("/api/auth/login", {
-        email: data.email,
-        password: data.password,
-      });
-
-      // If successful, reset the form
-      setError(null);
-      form.reset();
-    } catch (err) {
-      if (isAxiosError(err)) {
-        const errMsg =
-          err.response?.data?.message || err.response?.data || "Login failed.";
-        setError(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
-      } else {
-        setError("Something unexpected occurred. Please try again.");
-      }
+  const { mutate, isPending, isError, error, isSuccess , data} = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const res = await axiosInstance.post("/api/auth/login", data);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      console.log("✅ Login Success:", data);
+      // Optional: redirect or show toast
     }
   });
-};
 
+  const onSubmit = (data: FormValues) => {
+    mutate(data);
+  };
   return (
     <div className="flex justify-center items-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md border-none bg-[#DBE2EF] text-black">
@@ -106,12 +93,22 @@ const onSubmit = async (data: FormValues) => {
                   </FormItem>
                 )}
               />
+
               {/* Error Section */}
-              {error && (
-                <div className="bg-red-300 border border-red-400 text-red-700 px-4 py-1 rounded">
-                  {error}
+              {isError && (
+                <div className="bg-red-700 border border-red-400  text-red-200 px-4 py-1 rounded">
+                  {isAxiosError(error)
+                    ? error.response?.data?.message || "Login failed"
+                    : "Something went wrong"}
                 </div>
               )}
+
+              {isSuccess && (
+                <div className="bg-green-900 text-white px-4 py-1 rounded">
+                  Login successful!
+                </div>
+              )}
+
               <Button disabled={isPending} type="submit" className="w-full">
                 {isPending ? "Logging in..." : "Login"}
               </Button>

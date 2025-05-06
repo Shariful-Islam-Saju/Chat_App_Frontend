@@ -19,14 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema } from "@/app/model/authSchemas";
 import axiosInstance from "@/lib/axios";
-import {isAxiosError} from "axios";
-import {useQueries} from '@tanstack/react-query'
+import { isAxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
 type FormValues = z.infer<typeof registerFormSchema>;
 
 export default function RegisterForm() {
   const [preview, setPreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(registerFormSchema),
@@ -48,44 +46,34 @@ export default function RegisterForm() {
     };
     reader.readAsDataURL(file);
   }
-const onSubmit = async (data: FormValues) => {
-  setError(null); // Clear previous error
 
-    startTransition(async () => {
-      try {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("email", data.email);
-        formData.append("password", data.password);
-
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async (data: FormValues) => {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
       if (data.avatar && data.avatar[0]) {
         formData.append("avatar", data.avatar[0]);
       }
 
-      await axiosInstance.post("/api/auth/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
-
-      // Reset form and preview on success
+      const res = await axiosInstance.post("/api/auth/register", formData);
+      return res.data;
+    },
+    onSuccess: () => {
       form.reset();
       setPreview(null);
-      setError(null);
-    } catch (err) {
+    },
+    onError: (err) => {
       if (isAxiosError(err)) {
-        const errMsg =
-          err.response?.data?.message ||
-          err.response?.data ||
-          "Registration failed.";
-        setError(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
-      } else {
-        setError("Something unexpected occurred. Please try again.");
+        console.log(err.response?.data);
       }
-    }
+    },
   });
-};
+
+  const onSubmit = async (data: FormValues) => {
+    mutate(data);
+  };
 
   return (
     <div className="flex justify-center items-center min-h-[80vh] px-4">
@@ -199,10 +187,10 @@ const onSubmit = async (data: FormValues) => {
                 )}
               />
 
-              {/* Error Section */}
-              {error && (
-                <div className="bg-red-300 border border-red-400 text-red-700 px-4 py-1 rounded">
-                  {error}
+              {error && isAxiosError(error) && (
+                <div className="bg-red-700 border border-red-400 text-red-200 px-4 py-1 rounded">
+                  {error.response?.data?.message ||
+                    "Something went wrong. Please try again."}
                 </div>
               )}
 
