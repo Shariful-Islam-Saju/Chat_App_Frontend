@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { loginFormSchema } from "@/app/model/authSchemas";
+import { loginFormSchema } from "@/model/authSchemas";
 import axiosInstance from "@/lib/axios";
 import { isAxiosError } from "axios";
 
@@ -31,7 +31,7 @@ export default function LoginForm() {
     },
   });
 
-  const { mutate, isPending, isError, error, isSuccess ,} = useMutation({
+  const { mutate, isPending, isError, error, isSuccess } = useMutation({
     mutationFn: async (data: FormValues) => {
       const res = await axiosInstance.post("/api/auth/login", data);
       return res.data;
@@ -39,7 +39,7 @@ export default function LoginForm() {
     onSuccess: (data) => {
       console.log("✅ Login Success:", data);
       // Optional: redirect or show toast
-    }
+    },
   });
 
   const onSubmit = (data: FormValues) => {

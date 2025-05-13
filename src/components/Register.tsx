@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { registerFormSchema } from "@/app/model/authSchemas";
+import { registerFormSchema } from "@/model/authSchemas";
 import axiosInstance from "@/lib/axios";
 import { isAxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
