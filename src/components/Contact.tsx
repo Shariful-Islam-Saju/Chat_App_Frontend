@@ -1,4 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const ContactPage = () => {
   const [form, setForm] = useState({
@@ -15,51 +21,53 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you can handle form submission, e.g., send data to API
     alert(`Thank you, ${form.name}! Your message has been sent.`);
     setForm({ name: "", email: "", message: "" });
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", padding: "2rem" }}>
-      <h1>Contact Us</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Name:</label>
-        <input
-          id="name"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          type="text"
-          required
-          style={{ display: "block", width: "100%", marginBottom: "1rem" }}
-        />
-
-        <label htmlFor="email">Email:</label>
-        <input
-          id="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          type="email"
-          required
-          style={{ display: "block", width: "100%", marginBottom: "1rem" }}
-        />
-
-        <label htmlFor="message">Message:</label>
-        <textarea
-          id="message"
-          name="message"
-          value={form.message}
-          onChange={handleChange}
-          required
-          rows={5}
-          style={{ display: "block", width: "100%", marginBottom: "1rem" }}
-        />
-
-        <button type="submit" style={{ padding: "0.5rem 1rem" }}>
-          Send
-        </button>
+    <div className="max-w-xl mx-auto p-6 mt-12 bg-white rounded-2xl shadow-md">
+      <h1 className="mb-8 text-3xl font-semibold text-center">Contact Us</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            value={form.name}
+            onChange={handleChange}
+            required
+            placeholder="Your full name"
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            placeholder="you@example.com"
+          />
+        </div>
+        <div>
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            name="message"
+            value={form.message}
+            onChange={handleChange}
+            required
+            rows={5}
+            placeholder="Write your message here..."
+          />
+        </div>
+        <Button type="submit" className="w-full">
+          Send Message
+        </Button>
       </form>
     </div>
   );

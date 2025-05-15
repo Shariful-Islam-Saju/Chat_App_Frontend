@@ -19,10 +19,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema } from "@/model/authSchemas";
 import axiosInstance from "@/lib/axios";
 import { isAxiosError } from "axios";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -37,8 +41,8 @@ export default function LoginForm() {
       return res.data;
     },
     onSuccess: (data) => {
-      console.log("✅ Login Success:", data);
-      // Optional: redirect or show toast
+      setUser(data);
+      router.refresh();
     },
   });
 

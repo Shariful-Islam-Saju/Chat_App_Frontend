@@ -5,30 +5,47 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MaxWidthWrapper from "./MaxWidthWrapper";
-
-const links = [
-  { name: "Home", href: "/" },
-  { name: "Login", href: "/login" },
-  { name: "Register", href: "/register" },
-  { name: "Logout", href: "/logout" },
-];
+import { useAuthStore } from "@/store/useAuthStore";
+import axiosInstance from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.get("/api/auth/logout");
+      setUser(null); // Clear Zustand user
+      router.push("/login"); // Redirect to login
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
+  const authLinks = [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  const guestLinks = [
+    { name: "Login", href: "/login" },
+    { name: "Register", href: "/register" },
+  ];
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <MaxWidthWrapper>
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="text-2xl font-bold">
             <Link href="/">Shariful Islam</Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6">
-            {links.map((link) => (
+            {(user ? authLinks : guestLinks).map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
@@ -37,6 +54,14 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-red-500 font-medium transition"
+              >
+                Logout
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -59,7 +84,7 @@ export default function Navbar() {
       {/* Mobile Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-white px-4 pb-4 space-y-2">
-          {links.map((link) => (
+          {(user ? authLinks : guestLinks).map((link) => (
             <Link
               key={link.name}
               href={link.href}
@@ -69,6 +94,17 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+          {user && (
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                handleLogout();
+              }}
+              className="block w-full text-left text-gray-700 hover:text-red-500 font-medium"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </nav>

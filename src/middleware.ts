@@ -6,11 +6,10 @@ import { authRoute } from "./routes";
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt_auth_token")?.value;
   const { pathname } = request.nextUrl;
-  const isPublicPage = authRoute.includes(pathname);
-
-  if (isPublicPage) {
+  const isAuthPage = authRoute.includes(pathname);
+  if (isAuthPage) {
     if (token) {
-      return NextResponse.redirect(new URL("/profile", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     return NextResponse.next();
   }
@@ -25,6 +24,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all routes except static files and public routes
-    "/((?!_next/static|_next/image|favicon.ico|login|register).*)",
+    "/((?!_next/.*|favicon.ico).*)",
   ],
 };

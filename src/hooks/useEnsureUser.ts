@@ -15,7 +15,6 @@ export const useEnsureUser = () => {
           method: "GET",
           withCredentials: true,
         });
-        console.log(res.data)
         setUser(res.data.user);
       } catch (error) {
         window.location.href = "/login";
@@ -25,5 +24,6 @@ export const useEnsureUser = () => {
     if (!user) {
       fetchUser();
     }
+
   }, [user, setUser]);
 };
