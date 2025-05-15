@@ -42,7 +42,7 @@ export default function LoginForm() {
     },
     onSuccess: (data) => {
       setUser(data);
-      router.refresh();
+      router.push("/dashboard");
     },
   });
 

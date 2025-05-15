@@ -2,10 +2,10 @@
 
 import React from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import Image from "next/image";
 
 const DashboardPage = () => {
   const user = useAuthStore((state) => state.user);
-
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -19,7 +19,9 @@ const DashboardPage = () => {
       <h1 className="text-3xl font-bold mb-6">Welcome to your Dashboard</h1>
 
       <div className="bg-white shadow-lg rounded-xl p-6 flex items-center space-x-6">
-        <img
+        <Image
+        width={150}
+        height={150}
           src={user.profilePic}
           alt="Profile"
           className="w-20 h-20 rounded-full object-cover border-2 border-blue-500"

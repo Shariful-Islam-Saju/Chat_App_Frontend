@@ -71,7 +71,7 @@ export default function RegisterForm() {
       form.reset();
       setPreview(null);
       setUser(data);
-      router.refresh();
+      router.push("/dashboard");
     },
     onError: (err) => {
       if (isAxiosError(err)) {

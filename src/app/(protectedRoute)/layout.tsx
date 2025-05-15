@@ -2,9 +2,9 @@
 import { useEnsureUser } from "@/hooks/useEnsureUser";
 import React, { ReactNode } from "react";
 
-const layout = ({ children }: { children: ReactNode }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
   useEnsureUser();
   return <>{children}</>;
 };
 
-export default layout;
+export default Layout;
