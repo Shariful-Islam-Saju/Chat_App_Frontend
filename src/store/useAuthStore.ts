@@ -1,32 +1,18 @@
-import axiosInstance from "@/lib/axios";
 import { create } from "zustand";
 
-interface AuthUser {
+type User = {
   id: string;
   name: string;
   email: string;
-  // Add more fields if your backend returns them
-}
+  profilePic: string
+};
 
-interface AuthState {
-  authUser: AuthUser | null;
-  isAuthUserLoading: boolean;
-  checkUser: () => Promise<void>;
-}
+type AuthStore = {
+  user: User | null;
+  setUser: (user: User | null) => void;
+};
 
-export const useAuthStore = create<AuthState>((set) => ({
-  authUser: null,
-  isAuthUserLoading: true,
-  checkUser: async () => {
-    set({ isAuthUserLoading: true });
-    try {
-      const res = await axiosInstance.get("/api/auth/check-auth");
-      set({ authUser: res.data });
-    } catch (error) {
-      console.error("❌ Error in useAuthStore:", error);
-      set({ authUser: null });
-    } finally {
-      set({ isAuthUserLoading: false });
-    }
-  },
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
 }));
