@@ -5,6 +5,7 @@ import { authRoute } from "./routes";
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt_auth_token")?.value;
+  console.log("This is jwt_auth_token", token);
   const { pathname } = request.nextUrl;
   const isAuthPage = authRoute.includes(pathname);
   if (isAuthPage) {
