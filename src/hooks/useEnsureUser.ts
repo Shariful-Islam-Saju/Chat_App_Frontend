@@ -4,14 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import axiosInstance from "@/lib/axios";
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { authRoute } from "@/routes";
+import { useRouter } from "next/navigation";
 
 export const useEnsureUser = () => {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
-  const pathname = usePathname();
   const { data, error, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -32,15 +30,10 @@ export const useEnsureUser = () => {
   useEffect(() => {
     if (error) {
       console.error("Error in useEnsureUser:", error);
-      const isAuthRoute = authRoute.some((route) => pathname.includes(route));
 
-      if (isAuthRoute) {
-        router.push(pathname);
-      } else {
-        router.push("/login");
-      }
+      router.push("/login");
     }
   }, [error, router]);
 
-  return { user, isLoading };
+  return { data, isLoading };
 };
