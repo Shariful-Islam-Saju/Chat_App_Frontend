@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import axiosInstance from "@/lib/axios";
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export const useEnsureUser = () => {
   const user = useAuthStore((state) => state.user);
@@ -24,6 +24,7 @@ export const useEnsureUser = () => {
   });
 
   useEffect(() => {
+    console.log("It's working", data);
     if (data) {
       setUser(data);
 
@@ -32,6 +33,7 @@ export const useEnsureUser = () => {
   }, [data, setUser, router]);
   useEffect(() => {
     if (error) {
+      console.log("It's working", error);
       console.error("Error in useEnsureUser:", error);
       router.push("/login");
     }
