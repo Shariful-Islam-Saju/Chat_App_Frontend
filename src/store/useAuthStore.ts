@@ -1,11 +1,5 @@
 import { create } from "zustand";
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  profilePic: string
-};
+import type { User } from "@/types/user";
 
 type AuthStore = {
   user: User | null;
