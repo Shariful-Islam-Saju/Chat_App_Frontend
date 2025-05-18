@@ -4,10 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import axiosInstance from "@/lib/axios";
 import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 export const useEnsureUser = () => {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["user"],
@@ -17,24 +19,23 @@ export const useEnsureUser = () => {
       });
       return res.data.user;
     },
-    enabled: !user, // Only fetch if no user exists
-    retry: false, // Disable retries to handle redirect immediately
+    enabled: !user, // Only run if no user
+    retry: false, // Don't retry on failure
   });
 
-  // Handle successful data fetch
   useEffect(() => {
     if (data) {
       setUser(data);
-    }
-  }, [data, setUser]);
 
-  // Handle errors
+      router.push("/dashboard");
+    }
+  }, [data, setUser, router]);
   useEffect(() => {
     if (error) {
-      console.log("Error in useEnsureUser", error);
-      window.location.href = "/login";
+      console.error("Error in useEnsureUser:", error);
+      router.push("/login");
     }
-  }, [error]);
+  }, [error, router]);
 
   return { user, isLoading };
 };
