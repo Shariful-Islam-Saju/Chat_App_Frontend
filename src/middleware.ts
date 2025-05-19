@@ -1,26 +1,30 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { protectedRoutes, authRoutes } from "./routes"; // import both route lists
+import { protectedRoutes, authRoutes } from "./routes";
 
 export function middleware(request: NextRequest) {
   const jwt = request.cookies.get("jwt_auth_token")?.value;
-  const pathname = request.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname.replace(/\/$/, "") || "/";
 
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
   const isAuthPage = authRoutes.some((route) => pathname.startsWith(route));
-
-  // 🚫 If the user is trying to access a protected route without JWT
+  console.log(jwt);
   if (isProtected && !jwt) {
+    console.log("🔒 Protected route - redirecting to login");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 🚫 If the user is logged in and trying to access login/register
   if (jwt && isAuthPage) {
+    console.log("✅ Logged in user on auth page - redirecting to dashboard");
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};
