@@ -21,13 +21,13 @@ import { registerFormSchema } from "@/model/authSchemas";
 import axiosInstance from "@/lib/axios";
 import { isAxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 type FormValues = z.infer<typeof registerFormSchema>;
 
 export default function RegisterForm() {
   const [preview, setPreview] = useState<string | null>(null);
-  const setUser = useAuthStore((state) => state.setUser);
+  const setUser = useUserStore((state) => state.setUser);
   const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(registerFormSchema),

@@ -19,13 +19,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema } from "@/model/authSchemas";
 import axiosInstance from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 
 type FormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const setUser = useUserStore((state) => state.setUser);
   const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(loginFormSchema),
