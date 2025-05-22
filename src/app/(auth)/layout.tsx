@@ -1,28 +1,46 @@
-import axiosInstance from "@/lib/axios";
-import { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ReactNode } from "react";
+import axios from "axios";
 
 export default async function AuthLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get("jwt_auth_token")?.value;
+
+  if (!jwtToken) {
+    // No token means not logged in
+    return <>{children}</>;
+  }
+
   try {
-    const res = await axiosInstance("/api/auth/check-auth", {
-      withCredentials: true,
-    });
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/check-auth`,
+      {
+        headers: {
+          Cookie: `jwt_auth_token=${jwtToken}`, // ✅ Pass token as cookie
+        },
+      }
+    );
 
-    const user = res.data;
-
+    const user = res.data.user;
+    console.log(user);
     if (user?.id) {
-      // User is logged in, redirect to dashboard
+      // User is already logged in, redirect them
+      console.log("Hi");
       redirect("/dashboard");
     }
 
-    // User is not logged in, show auth pages
+    // Token exists but user isn't valid
     return <>{children}</>;
   } catch (error) {
-    // If check-auth fails, assume user is not authenticated
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error; // re-throw Next.js redirect
+    }
+    console.error("Auth check failed", error);
     return <>{children}</>;
   }
 }
