@@ -1,16 +1,21 @@
-"use client";
+import axiosInstance from "@/lib/axios";
+import { redirect } from "next/navigation";
+import { ReactNode } from "react";
 
-import React, { ReactNode } from "react";
-import Loading from "./loading";
-import { useEnsureUser } from "@/hooks/useEnsureUser";
+export default async function Layout({ children }: { children: ReactNode }) {
+  try {
+    const res = await axiosInstance("/api/auth/check-auth", {
+      withCredentials: true,
+    });
+    const user = res.data;
 
-const Layout = ({ children }: { children: ReactNode }) => {
-  const { data: user, isLoading } = useEnsureUser();
-  if (isLoading || !user) {
-    return <Loading />; // Or a Spinner component
+    if (!user?.id) {
+      redirect("/login"); // Or wherever your login route is
+    }
+
+    return <>{children}</>;
+  } catch (error) {
+    console.error("Auth check failed", error);
+    redirect("/login");
   }
-
-  return <>{children}</>;
-};
-
-export default Layout;
+}

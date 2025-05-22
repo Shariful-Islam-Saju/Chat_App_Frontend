@@ -1,14 +1,28 @@
-import { cookies } from "next/headers";
+import axiosInstance from "@/lib/axios";
+import { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import React, { ReactNode } from "react";
 
-const layout = async ({ children }: { children: ReactNode }) => {
-  const cookieStore = await cookies();
-  const jwtToken = cookieStore.get("jwt_auth_token");
-  if (jwtToken) {
-    redirect("/dashboard");
+export default async function AuthLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  try {
+    const res = await axiosInstance("/api/auth/check-auth", {
+      withCredentials: true,
+    });
+
+    const user = res.data;
+
+    if (user?.id) {
+      // User is logged in, redirect to dashboard
+      redirect("/dashboard");
+    }
+
+    // User is not logged in, show auth pages
+    return <>{children}</>;
+  } catch (error) {
+    // If check-auth fails, assume user is not authenticated
+    return <>{children}</>;
   }
-  return <>{children}</>;
-};
-
-export default layout;
+}
